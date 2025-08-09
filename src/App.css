@@ -1,0 +1,150 @@
+/* App.css */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f5f5;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* Глобальные стили для контейнера */
+.container {
+  padding: 20px;
+}
+
+/* Стили для навигационной панели */
+.nav-app-bar {
+  margin-bottom: 30px;
+}
+
+.nav-toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* Стили для форм */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  padding: 20px;
+}
+
+.auth-form {
+  width: 100%;
+  max-width: 450px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.form-title {
+  margin-bottom: 25px !important;
+  text-align: center;
+  color: #1976d2;
+}
+
+.form-button {
+  margin-top: 20px !important;
+  padding: 12px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+}
+
+/* Стили для домашней страницы */
+.home-container {
+  margin-top: 30px;
+}
+
+.home-paper {
+  padding: 30px;
+  border-radius: 12px;
+}
+
+.home-title {
+  margin-bottom: 25px !important;
+  color: #2c3e50;
+}
+
+.user-info {
+  margin-top: 25px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+/* Стили для сообщений об ошибках */
+.error-alert {
+  border-radius: 8px !important;
+  margin-bottom: 25px !important;
+}
+
+.error-list {
+  padding-left: 24px !important;
+  margin: 10px 0 0 !important;
+}
+
+.error-list li {
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* Адаптивные стили */
+@media (max-width: 600px) {
+  .auth-form {
+    padding: 20px;
+    box-shadow: none;
+  }
+  
+  .home-paper {
+    padding: 20px;
+  }
+  
+  .nav-buttons {
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+/* Стили для состояния загрузки */
+.loading-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  z-index: 9999;
+}
+
+.loading-spinner {
+  color: #1976d2 !important;
+}
