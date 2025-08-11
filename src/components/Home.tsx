@@ -1,5 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
-import { logout, type AppDispatch, type RootState } from "../store";
+import { type AppDispatch } from "../store/store";
+import type { RootState } from "../store/types";
+import { logout } from "../store/features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
 import { 
   Box, 

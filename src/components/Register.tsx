@@ -1,11 +1,19 @@
-import { withAuthForm } from './withAuthForm';
-import { registerUser } from "../store";
+import { type AuthFormConfig, createAuthForm } from "../factories/authFormFactory";
+import { registerUser } from "../store/features/auth/authSlice";
+import { withAuthForm } from "./withAuthForm";
 
-// Проверка пароля и сбор ошибок
+// Тип данных для формы регистрации
+type RegisterFormData = {
+  userName: string;
+  email: string;
+  password: string;
+};
+
+// Проверка пароля
 const validatePassword = (password: string): string[] => {
   const errors = [];
   
-  if (password.length < 8) {
+  if (password?.length < 8) {
     errors.push("минимум 8 символов");
   }
   
@@ -24,33 +32,23 @@ const validatePassword = (password: string): string[] => {
   return errors;
 };
 
-const Register = withAuthForm({
+// Конфигурация формы
+const registerConfig: AuthFormConfig<RegisterFormData> = {
   title: "Регистрация",
-  buttonText: "Зарегистрироваться",
   fields: [
-    {
-      id: "userName",
-      type: "text",
-      label: "Имя:",
-      placeholder: "Введите ваше имя",
-      required: true
-    },
-    {
-      id: "email",
-      type: "email",
-      label: "Электронная почта:",
-      placeholder: "Введите ваш email",
-      required: true
-    },
-    {
-      id: "password",
-      type: "password",
-      label: "Пароль:",
-      placeholder: "Введите ваш пароль",
-      required: true
-    }
+    { id: 'userName', label: "Имя", placeholder: "Введите ваше имя" },
+    { id: 'email', label: "Электронная почта", placeholder: "Введите ваш email", type: "email" },
+    { id: 'password', label: "Пароль", placeholder: "Введите ваш пароль", type: "password" }
   ],
-  validateForm: (formData) => {
+  submitButtonText: "Зарегистрироваться"
+};
+
+const RegisterForm = createAuthForm(registerConfig)
+
+// Обертываем форму в HOC
+const Register = withAuthForm(
+  registerUser,
+  (formData: RegisterFormData) => {
     const errors: string[] = [];
     const passwordErrors = validatePassword(formData.password);
     
@@ -61,8 +59,12 @@ const Register = withAuthForm({
     
     return errors;
   },
-  submitAction: registerUser,
-  successRedirect: '/login'
-});
+  '/login',
+  {
+    userName: "Имя",
+    email: "Электронная почта",
+    password: "Пароль"
+  }
+)(RegisterForm);
 
 export default Register;

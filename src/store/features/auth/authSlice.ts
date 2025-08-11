@@ -1,22 +1,12 @@
-import { configureStore, createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import type { AuthState, UserState } from '../../types';
 
-interface UserState {
-  id: string;
-  name: string;
-  email: string;
-  passwordHash: string;
-}
 
-interface AuthState {
-  user: UserState | null;
-  loading: boolean;
-  error: string | null;
-}
-
-// Упрощённая хэш-функция для паролей
-function passwordHash(password: string): string {
-  // Простое преобразование в base64
-  return btoa(encodeURIComponent(password));
+async function passwordHash(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(encodeURIComponent(password));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 // Начальное состояние аутентификации
@@ -26,7 +16,8 @@ const initialAuthState: AuthState = {
   error: null,
 };
 
-// Создание thunk для аутентификации пользователя
+// Асинхронные thunk
+// thunk для аутентификации пользователя
 export const loginUser = createAsyncThunk(
   'auth/login',
   async ({ email, password }: { email: string; password: string }) => {
@@ -34,14 +25,14 @@ export const loginUser = createAsyncThunk(
     const user = users.find((u: UserState) => u.email === email);
     if (!user)
       throw new Error('Пользователь не зарегистрирован');
-    if (user.passwordHash !== passwordHash(password))
+    if (user.passwordHash !== await passwordHash(password))
       throw new Error('Неверный пароль');
     localStorage.setItem('user', JSON.stringify(user));
     return user;
   }
 );
 
-// Создание thunk для регистрации пользователя
+// thunk для регистрации пользователя
 export const registerUser = createAsyncThunk(
   'auth/register',
   async ({ userName, email, password }: { userName: string; email: string; password: string }) => {
@@ -53,11 +44,12 @@ export const registerUser = createAsyncThunk(
       id: crypto.randomUUID(),
       name: userName,
       email: email,
-      passwordHash: passwordHash(password)
+      passwordHash: await passwordHash(password)
     };
 
     const updatedUsers = [...users, user];
     localStorage.setItem('users', JSON.stringify(updatedUsers));
+    return user;
   }
 );
 
@@ -81,8 +73,9 @@ const authSlice = createSlice({
         state.error = null;
       })
 
-      .addCase(registerUser.fulfilled, (state) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
+        state.user = action.payload;
       })
 
       .addCase(registerUser.rejected, (state, action) => {
@@ -107,18 +100,6 @@ const authSlice = createSlice({
   },  
 });
 
-// Экспорт actions
+// Экспорты
 export const { logout, clearError } = authSlice.actions;
-
-// Создание store
-export const store = configureStore({
-  reducer: {
-    auth: authSlice.reducer,
-  },
-});
-
-// Типы для использования в компонентах
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
-export default store;
+export default authSlice.reducer;

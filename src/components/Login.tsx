@@ -1,28 +1,34 @@
-import { withAuthForm } from './withAuthForm';
-import { loginUser } from '../store';
+import { type AuthFormConfig, createAuthForm } from "../factories/authFormFactory";
+import { loginUser } from "../store/features/auth/authSlice";
+import { withAuthForm } from "./withAuthForm";
 
-const Login = withAuthForm({
+// Тип данных для формы входа
+type LoginFormData = {
+  email: string;
+  password: string;
+};
+
+// Конфигурация формы
+const loginConfig: AuthFormConfig<LoginFormData> = {
   title: "Вход",
-  buttonText: "Войти",
   fields: [
-    {
-      id: "email",
-      type: "email",
-      label: "Электронная почта:",
-      placeholder: "Введите ваш email",
-      required: true
-    },
-    {
-      id: "password",
-      type: "password",
-      label: "Пароль:",
-      placeholder: "Введите ваш пароль",
-      required: true
-    }
+    { id: 'email', label: "Электронная почта", placeholder: "Введите ваш email", type: "email" },
+    { id: 'password', label: "Пароль", placeholder: "Введите ваш пароль", type: "password" }
   ],
-  validateForm: () => [],
-  submitAction: loginUser,
-  successRedirect: '/'
-});
+  submitButtonText: "Войти"
+};
+
+const LoginForm = createAuthForm(loginConfig);
+
+// Обертываем компонент формы в HOC
+const Login = withAuthForm(
+  loginUser,
+  () => [], // Кастомная валидация отсутствует
+  '/', // Перенаправление после успеха
+  { // Обязательные поля с метками для ошибок
+    email: "Электронная почта",
+    password: "Пароль"
+  }
+)(LoginForm);
 
 export default Login;
