@@ -1,6 +1,6 @@
 import { registerUser } from "../../store/features/auth/authSlice";
 import { type AuthFormConfig, createAuthForm } from "../factories/authFormFactory";
-import { withAuthLogic } from "./withAuthLogic";
+import withAuthLogic from "./withAuthLogic";
 // Тип данных для формы регистрации
 type RegisterFormData = {
   userName: string;
@@ -10,9 +10,9 @@ type RegisterFormData = {
 
 // Проверка пароля
 const validatePassword = (password: string): string[] => {
-  const errors = [];
+  const errors: string[] = [];
   
-  if (password?.length < 8) {
+  if (password.length < 8) {
     errors.push("минимум 8 символов");
   }
   
@@ -28,6 +28,10 @@ const validatePassword = (password: string): string[] => {
     errors.push("строчные буквы");
   }
   
+  if (!/[!@#$%^&*]/.test(password)) {
+    errors.push("специальные символы (!@#$%^&*)");
+  }  
+
   return errors;
 };
 
@@ -45,9 +49,9 @@ const registerConfig: AuthFormConfig<RegisterFormData> = {
 const RegisterForm = createAuthForm(registerConfig)
 
 // Обертываем форму в HOC
-const Register = withAuthLogic(
-  registerUser,
-  (formData: RegisterFormData) => {
+const Register = withAuthLogic<RegisterFormData>({
+  submitAction: registerUser, // Действие при отправке формы
+  validateForm: (formData) => { // Кастомная валидация
     const errors: string[] = [];
     const passwordErrors = validatePassword(formData.password);
     
@@ -58,12 +62,13 @@ const Register = withAuthLogic(
     
     return errors;
   },
-  '/login',
-  {
+  successRedirect: '/login', // Перенаправление после успеха
+  requiredFields: { // Обязательные поля с метками для ошибок
     userName: "Имя",
     email: "Электронная почта",
     password: "Пароль"
   }
-)(RegisterForm);
+})(RegisterForm);
+
 
 export default Register;

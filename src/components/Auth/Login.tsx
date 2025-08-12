@@ -1,6 +1,6 @@
 import { loginUser } from "../../store/features/auth/authSlice";
 import { type AuthFormConfig, createAuthForm } from "../factories/authFormFactory";
-import { withAuthLogic } from "./withAuthLogic";
+import withAuthLogic from "./withAuthLogic";
 
 // Тип данных для формы входа
 type LoginFormData = {
@@ -21,14 +21,14 @@ const loginConfig: AuthFormConfig<LoginFormData> = {
 const LoginForm = createAuthForm(loginConfig);
 
 // Обертываем компонент формы в HOC
-const Login = withAuthLogic(
-  loginUser,
-  () => [], // Кастомная валидация отсутствует
-  '/', // Перенаправление после успеха
-  { // Обязательные поля с метками для ошибок
+const Login = withAuthLogic<LoginFormData>({
+  submitAction: loginUser, // Действие при отправке формы
+  validateForm: () => [], // Кастомная валидация отсутствует
+  successRedirect: '/', // Перенаправление после успеха
+  requiredFields: { // Обязательные поля с метками для ошибок
     email: "Электронная почта",
     password: "Пароль"
   }
-)(LoginForm);
+})(LoginForm);
 
 export default Login;

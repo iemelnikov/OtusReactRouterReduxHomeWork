@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { TextField, Button, Typography, Alert, CircularProgress, AlertTitle, Box } from '@mui/material';
+import { TextField, Button, Typography, CircularProgress, Box } from '@mui/material';
 import type { AuthFormProps } from '../Auth/types';
 
 // Типизация конфигурации формы
@@ -37,24 +37,7 @@ export const createAuthForm = <T extends Record<string, string>>(
             {config.title}
           </Typography>
           
-          {props.error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {props.error}
-            </Alert>
-          )}
-          
-          {props.validationErrors && props.validationErrors.length > 0 && (
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              <AlertTitle>Ошибки валидации</AlertTitle>
-              <ul>
-                {props.validationErrors.map((err, index) => (
-                  <li key={index}>{err}</li>
-                ))}
-              </ul>
-            </Alert>
-          )}
-
-          {/* Динамический рендеринг полей формы */}
+           {/* Динамический рендеринг полей формы */}
           {config.fields.map(({ id, label, placeholder, type = 'text' }) => (
             <TextField
               key={String(id)}
