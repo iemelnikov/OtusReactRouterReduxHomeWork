@@ -1,7 +1,6 @@
+import { registerUser } from "../../store/features/auth/authSlice";
 import { type AuthFormConfig, createAuthForm } from "../factories/authFormFactory";
-import { registerUser } from "../store/features/auth/authSlice";
-import { withAuthForm } from "./withAuthForm";
-
+import { withAuthLogic } from "./withAuthLogic";
 // Тип данных для формы регистрации
 type RegisterFormData = {
   userName: string;
@@ -46,7 +45,7 @@ const registerConfig: AuthFormConfig<RegisterFormData> = {
 const RegisterForm = createAuthForm(registerConfig)
 
 // Обертываем форму в HOC
-const Register = withAuthForm(
+const Register = withAuthLogic(
   registerUser,
   (formData: RegisterFormData) => {
     const errors: string[] = [];

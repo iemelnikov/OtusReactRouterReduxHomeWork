@@ -2,30 +2,21 @@ import { useState, useCallback, type FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { type AsyncThunkAction } from '@reduxjs/toolkit';
-import { type AppDispatch } from "../store/store";
-import type { RootState } from "../store/types";
-import { clearError } from "../store/features/auth/authSlice";
-
-// Пропсы, которые HOC добавляет к компоненту
-export type WithAuthFormProps<T extends Record<string, string>> = {
-  formData: T;
-  validationErrors: string[];
-  error: string | null;
-  loading: boolean;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-};
+import { type AppDispatch } from "../../store/store";
+import type { RootState } from "../../store/types";
+import type { AuthFormProps } from "./types";
+import { clearError } from "../../store/features/auth/authSlice";
 
 // Проверка на пустое поле
 const isFieldEmpty = (value: string): boolean => value.trim() === "";
 
-export const withAuthForm = <T extends Record<string, string>>(
+export const withAuthLogic = <T extends Record<string, string>>(
   submitAction: (data: T) => AsyncThunkAction<any, T, any>,
   validateForm: (formData: T) => string[],
   successRedirect: string,
   requiredFields: Record<string, string>
 ) => {
-  return (Component: FC<WithAuthFormProps<T>>) => {
+  return (Component: FC<AuthFormProps<T>>) => {
     const EnhancedComponent: FC = () => {
       const dispatch = useDispatch<AppDispatch>();
       const navigate = useNavigate();

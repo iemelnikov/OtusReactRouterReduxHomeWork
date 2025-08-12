@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import type { WithAuthFormProps } from '../components/withAuthForm';
 import { TextField, Button, Typography, Alert, CircularProgress, AlertTitle, Box } from '@mui/material';
+import type { AuthFormProps } from '../Auth/types';
 
 // Типизация конфигурации формы
 export type AuthFormConfig<T extends Record<string, string>> = {
@@ -17,20 +17,13 @@ export type AuthFormConfig<T extends Record<string, string>> = {
 // Фабричная функция для создания формы
 export const createAuthForm = <T extends Record<string, string>>(
   config: AuthFormConfig<T>
-): FC<WithAuthFormProps<T>> => {
-  return ({ 
-    formData, 
-    validationErrors, 
-    error, 
-    loading, 
-    handleChange, 
-    handleSubmit
-  }) => {
+): FC<AuthFormProps<T>> => {
+  return (props) => {
     return (
       <Box display="flex" justifyContent="center" alignItems="flex-start" minHeight="70vh">
         <Box 
           component="form" 
-          onSubmit={handleSubmit}
+          onSubmit={props.handleSubmit}
           sx={{
             width: '100%',
             maxWidth: 400,
@@ -44,17 +37,17 @@ export const createAuthForm = <T extends Record<string, string>>(
             {config.title}
           </Typography>
           
-          {error && (
+          {props.error && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
+              {props.error}
             </Alert>
           )}
           
-          {validationErrors.length > 0 && (
+          {props.validationErrors && props.validationErrors.length > 0 && (
             <Alert severity="warning" sx={{ mb: 2 }}>
               <AlertTitle>Ошибки валидации</AlertTitle>
               <ul>
-                {validationErrors.map((err, index) => (
+                {props.validationErrors.map((err, index) => (
                   <li key={index}>{err}</li>
                 ))}
               </ul>
@@ -72,8 +65,8 @@ export const createAuthForm = <T extends Record<string, string>>(
               label={label}
               placeholder={placeholder}
               id={String(id)}
-              value={formData[id] || ""}
-              onChange={handleChange}
+              value={props.formData ? props.formData[id] || "" : ""}
+              onChange={props.handleChange}
               variant="outlined"
             />
           ))}
@@ -83,10 +76,10 @@ export const createAuthForm = <T extends Record<string, string>>(
             fullWidth
             variant="contained"
             color="primary"
-            disabled={loading}
+            disabled={props.loading}
             sx={{ mt: 2, py: 1.5 }}
           >
-            {loading ? (
+            {props.loading ? (
               <CircularProgress size={24} color="inherit" />
             ) : (
               config.submitButtonText

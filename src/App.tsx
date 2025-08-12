@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom';
 import { Container } from '@mui/material';
 import Home from "./components/Home";
-import Login from "./components/Login";
 import NotFound from "./components/NotFound";
-import Register from "./components/Register";
 import Navigation from './components/Navigation';
+import Login from './components/Auth/Login';
+import Register from './components/Auth/Register';
 import './App.css'
 
 function App() {
