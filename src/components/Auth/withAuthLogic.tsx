@@ -6,7 +6,7 @@ import { type AppDispatch } from "../../store/store";
 import type { RootState } from "../../store/types";
 import type { AuthFormProps } from "./types";
 import { clearError } from "../../store/features/auth/authSlice";
-import { Alert, AlertTitle } from "@mui/material";
+import { Alert, AlertTitle, Box, Typography } from "@mui/material";
 
 // Интерфейс конфигурации для HOC
 interface AuthConfig<T extends Record<string, string>> {
@@ -21,6 +21,7 @@ function withAuthLogic<T extends Record<string, string>>(
 ) {
   return function (WrappedComponent: React.ComponentType<AuthFormProps<T>>) {
     return function EnhancedAuthForm() {
+      const user = useSelector((state: RootState) => state.auth.user);
       const dispatch = useDispatch<AppDispatch>();
       const navigate = useNavigate();
       const { loading, error } = useSelector((state: RootState) => state.auth);
@@ -72,6 +73,20 @@ function withAuthLogic<T extends Record<string, string>>(
  
       return (
         <>
+          {user !== null && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                pb: 3
+              }}
+            >
+              <Typography variant="h5">
+                Текущий пользователь: {user.name}
+              </Typography>
+            </Box>
+          )}
           <WrappedComponent
             formData={formData as T}
             validationErrors={validationErrors}

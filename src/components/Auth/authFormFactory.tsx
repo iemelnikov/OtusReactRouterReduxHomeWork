@@ -21,7 +21,7 @@ export const createAuthForm = <T extends Record<string, string>>(
   return (props) => {
     return (
       <Box display="flex" justifyContent="center" alignItems="flex-start" minHeight="70vh">
-        <Box 
+        <Box
           component="form" 
           onSubmit={props.handleSubmit}
           sx={{
