@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { TextField, Button, Typography, CircularProgress, Box } from '@mui/material';
-import type { AuthFormProps } from '../Auth/types';
+import type { AuthFormProps } from './types';
 
 // Типизация конфигурации формы
 export type AuthFormConfig<T extends Record<string, string>> = {

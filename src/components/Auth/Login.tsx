@@ -1,5 +1,5 @@
 import { loginUser } from "../../store/features/auth/authSlice";
-import { type AuthFormConfig, createAuthForm } from "../factories/authFormFactory";
+import { type AuthFormConfig, createAuthForm } from "./authFormFactory";
 import withAuthLogic from "./withAuthLogic";
 
 // Тип данных для формы входа
