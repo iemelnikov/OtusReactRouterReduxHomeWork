@@ -12,25 +12,27 @@ type RegisterFormData = {
 const validatePassword = (password: string): string[] => {
   const errors: string[] = [];
   
-  if (password.length < 8) {
-    errors.push("минимум 8 символов");
+  if (password) {
+    if (password.length < 8) {
+      errors.push("минимум 8 символов");
+    }
+    
+    if (!/\d/.test(password)) {
+      errors.push("цифры");
+    }
+    
+    if (!/[A-Z]/.test(password)) {
+      errors.push("заглавные буквы");
+    }
+    
+    if (!/[a-z]/.test(password)) {
+      errors.push("строчные буквы");
+    }
+    
+    if (!/[!@#$%^&*]/.test(password)) {
+      errors.push("специальные символы (!@#$%^&*)");
+    }  
   }
-  
-  if (!/\d/.test(password)) {
-    errors.push("цифры");
-  }
-  
-  if (!/[A-Z]/.test(password)) {
-    errors.push("заглавные буквы");
-  }
-  
-  if (!/[a-z]/.test(password)) {
-    errors.push("строчные буквы");
-  }
-  
-  if (!/[!@#$%^&*]/.test(password)) {
-    errors.push("специальные символы (!@#$%^&*)");
-  }  
 
   return errors;
 };
@@ -46,22 +48,25 @@ const registerConfig: AuthFormConfig<RegisterFormData> = {
   submitButtonText: "Зарегистрироваться"
 };
 
+const validateRegisterForm = (formData: RegisterFormData): string[] => {
+  console.log("formData:", formData); // Для отладки
+  const errors: string[] = [];
+  const passwordErrors = validatePassword(formData.password);
+  
+  if (passwordErrors.length > 0) {
+    errors.push('Пароль должен содержать:');
+    errors.push(...passwordErrors);
+  }
+  
+  return errors;
+};
+
 const RegisterForm = createAuthForm(registerConfig)
 
 // Обертываем форму в HOC
 const Register = withAuthLogic<RegisterFormData>({
   submitAction: registerUser, // Действие при отправке формы
-  validateForm: (formData) => { // Кастомная валидация
-    const errors: string[] = [];
-    const passwordErrors = validatePassword(formData.password);
-    
-    if (passwordErrors.length > 0) {
-      errors.push('Пароль должен содержать:');
-      errors.push(...passwordErrors);
-    }
-    
-    return errors;
-  },
+  validateForm: validateRegisterForm, // Кастомная валидация
   successRedirect: '/login', // Перенаправление после успеха
   requiredFields: { // Обязательные поля с метками для ошибок
     userName: "Имя",

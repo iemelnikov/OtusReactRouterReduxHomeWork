@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { type AsyncThunkAction } from '@reduxjs/toolkit';
@@ -34,26 +34,31 @@ function withAuthLogic<T extends Record<string, string>>(
         setValidationErrors(prev => prev.filter(err => !err.includes(id)));
         dispatch(clearError());
       }, [dispatch]);
- 
-      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        
+
         // Валидация обязательных полей
-        const requiredErrors = Object.entries(config.requiredFields)
+      const requiredErrors = useMemo(() => {
+        return Object.entries(config.requiredFields)
           .filter(([fieldId]) => !formData[fieldId as keyof T]?.trim())
           .map(([_, label]) => `Поле "${label}" обязательно для заполнения!`);
- 
+        }, [config.requiredFields, formData]);
+
+      // Пользовательская валидация
+      const customErrors = useMemo(() => {
+        return config.validateForm(formData as T);
+      }, [config.validateForm, formData]);
+      
+      const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        
         if (requiredErrors.length > 0) {
           setValidationErrors(requiredErrors);
           return;
         }
  
-        // Пользовательская валидация
-        const customErrors = config.validateForm(formData as T);
         if (customErrors.length > 0) {
           setValidationErrors(customErrors);
           return;
-        }
+        }        
  
         try {
           const resultAction = await dispatch(config.submitAction(formData as T));
@@ -63,7 +68,7 @@ function withAuthLogic<T extends Record<string, string>>(
         } catch (error) {
           // Ошибка обрабатывается Redux стором
         }
-      };
+      }, [dispatch, config, formData, navigate]);
  
       return (
         <>

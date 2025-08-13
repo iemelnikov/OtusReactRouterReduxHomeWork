@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { useMemo, type FC } from 'react';
 import { TextField, Button, Typography, CircularProgress, Box } from '@mui/material';
 import type { AuthFormProps } from './types';
 
@@ -38,21 +38,24 @@ export const createAuthForm = <T extends Record<string, string>>(
           </Typography>
           
            {/* Динамический рендеринг полей формы */}
-          {config.fields.map(({ id, label, placeholder, type = 'text' }) => (
-            <TextField
-              key={String(id)}
-              margin="normal"
-              required
-              fullWidth
-              type={type}
-              label={label}
-              placeholder={placeholder}
-              id={String(id)}
-              value={props.formData ? props.formData[id] || "" : ""}
-              onChange={props.handleChange}
-              variant="outlined"
-            />
-          ))}
+           {useMemo(() => 
+              config.fields.map(({ id, label, placeholder, type = 'text' }) => (
+              <TextField
+                key={String(id)}
+                margin="normal"
+                required
+                fullWidth
+                type={type}
+                label={label}
+                placeholder={placeholder}
+                id={String(id)}
+                value={props.formData ? props.formData[id] || "" : ""}
+                onChange={props.handleChange}
+                variant="outlined"
+              />
+            )),
+            [config.fields, props.formData, props.handleChange]
+          )}
 
           <Button
             type="submit"
